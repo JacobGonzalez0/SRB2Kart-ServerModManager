@@ -36,7 +36,6 @@ public class LoaderUtil {
                 if(ext.equalsIgnoreCase("pk3")){ 
                     
                     List<Kart> extractedResources = (ResourceUtil.getKartsPk3("res/karts/" + pathname));
-                    
                     karts.addAll(extractedResources);
                 }
 
@@ -48,11 +47,15 @@ public class LoaderUtil {
 
             }
 
+            
 
+            
         }catch(Exception ex){
             throw ex;
-        }
+        }  
     }
+    
+  
 
     public static List<Kart> getAllKarts(){
         return karts;

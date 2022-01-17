@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import com.srb2kart.server.servermanager.models.Kart;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 import net.mtrop.doom.DoomPK3;
 import net.mtrop.doom.WadBuffer;
 import net.mtrop.doom.WadEntry;
+import net.mtrop.doom.WadFile;
 import net.mtrop.doom.graphics.Colormap;
 import net.mtrop.doom.graphics.PNGPicture;
 import net.mtrop.doom.graphics.Palette;
@@ -28,6 +30,7 @@ import net.mtrop.doom.graphics.Picture;
 import net.mtrop.doom.object.TextObject;
 import net.mtrop.doom.util.GraphicUtils;
 import net.mtrop.doom.util.TextUtils;
+import net.mtrop.doom.util.WadUtils;
 
 @Component
 public class ResourceUtil {
@@ -181,6 +184,7 @@ public class ResourceUtil {
             newKart.setStartcolor(stats[15]);
             newKart.setPrefcolor(stats[17]);
             newKart.setFilename(path);
+            newKart.setIndex(i);
             
             exportKarts.add(newKart);
         }
@@ -189,5 +193,110 @@ public class ResourceUtil {
         file.close();
 
         return exportKarts;
+    }
+
+    public static void exportCharacter(Kart kart) throws ZipException, IOException{
+
+        String fileExt = kart.getFilename().substring(kart.getFilename().length()-3);
+
+        //TODO: Refactor because this was written at 6am
+        if(fileExt.equalsIgnoreCase("pk3")){
+
+            //get the file 
+            DoomPK3 file = new DoomPK3(new File(kart.getFilename()));
+            List<String> files = new ArrayList<String>();
+
+            String realname = kart.getName();
+            String sPrefix = realname;
+
+            //look for all related files and sort though them
+            List<String> graphics = file.getEntriesStartingWith("graphics");
+            List<String> skins = file.getEntriesStartingWith("skins");
+            List<String> sounds = file.getEntriesStartingWith("sounds");
+
+            String soundsPath = new String();
+            for(String filename: sounds){
+                if(filename.toLowerCase().contains(sPrefix)){
+                    soundsPath = filename;
+                }
+            }
+            soundsPath = soundsPath.substring(0,soundsPath.length()-8);
+            for(String filename: sounds){
+                if(filename.contains(soundsPath)){
+                    files.add(filename);
+                }
+            }
+
+            String skinPath = new String();
+            for(String filename: skins){
+                if(filename.toLowerCase().contains(sPrefix) && !filename.contains("S_SKIN")){
+                    skinPath = filename;
+                    break;
+                }
+            }
+
+            //Add skin def
+            System.out.println("DD: " + skinPath);
+            skinPath = skinPath.substring(0,skinPath.length()-6);
+            files.add(skinPath + "S_SKIN");
+            for(String filename: skins){
+                if(filename.contains(skinPath) && !filename.contains("S_SKIN")){
+                    files.add(filename);
+                }
+            }
+
+            String wantStart = new String();
+            for(String filename: graphics){
+                
+                if(filename.toLowerCase().contains(sPrefix) && !filename.contains("S_SKIN")){
+                    wantStart = filename;
+                    break;
+                }
+
+            }
+
+            String wantFix = wantStart.substring(0, wantStart.length()-4);
+            wantFix = wantFix.substring(wantStart.length()-8);
+
+            String correctPath = wantStart.substring(0,wantStart.length()-8);
+            files.add(correctPath + wantFix.toUpperCase() +"RANK");
+            files.add(correctPath + wantFix.toUpperCase() +"WANT");
+            files.add(correctPath + wantFix.toUpperCase() +"MMAP");
+            
+            
+            //prepare new wad file
+            WadFile newwad = WadFile.createWadFile("res/" + realname + ".wad");
+            
+
+            for(int i = 0; i < files.size(); i++){
+                ZipEntry entry = file.getEntry(files.get(i));
+                System.out.println(files.get(i));
+                byte[] bArray = file.getData(files.get(i));
+                String nam = new File(entry.getName()).getName();
+
+                //check for file extentions
+                if(
+                    nam.length() > 7 &&
+                    nam.substring(nam.length()-7).toLowerCase().equals("ogg.ogg") 
+                ){
+                    //and remove it
+                    newwad.addData(nam.substring(0, nam.length()-8), bArray); 
+                }else if( 
+                    nam.substring(nam.length()-3).toLowerCase().equals("ogg") ) 
+                {
+                    newwad.addData(nam.substring(0, nam.length()-4), bArray); 
+                }else{
+                    newwad.addData(nam, bArray);
+                }
+                
+            }
+
+            newwad.close();
+        }
+
+        if(fileExt.equalsIgnoreCase("wad")){
+
+        }
+
     }
 }

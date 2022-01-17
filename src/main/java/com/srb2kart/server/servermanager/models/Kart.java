@@ -22,6 +22,7 @@ public class Kart {
     private String prefcolor;
     private String image;
     private String filename;
+    private int index;
 
     public Kart(long id, String name, String realname, String kartspeed, String kartweight, String startcolor, String prefcolor) {
         this.id = id;
@@ -31,6 +32,14 @@ public class Kart {
         this.kartweight = kartweight;
         this.startcolor = startcolor;
         this.prefcolor = prefcolor;
+    }
+
+    public int getIndex() {
+        return this.index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     public String getFilename() {

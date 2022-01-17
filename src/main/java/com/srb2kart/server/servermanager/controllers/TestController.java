@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.zip.ZipException;
 
 import javax.imageio.ImageIO;
 
@@ -57,8 +58,10 @@ public class TestController {
     
 
     @GetMapping("/test")
-    public String testing(Model model){
+    public String testing(Model model) throws ZipException, IOException{
+        System.out.println(LoaderUtil.getAllKarts().size());
         
+        ResourceUtil.exportCharacter(LoaderUtil.getAllKarts().get(41));
         model.addAttribute("karts", LoaderUtil.getAllKarts());
         
         return "test";
