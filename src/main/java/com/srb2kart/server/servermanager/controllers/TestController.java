@@ -61,7 +61,7 @@ public class TestController {
     public String testing(Model model) throws ZipException, IOException{
         System.out.println(LoaderUtil.getAllKarts().size());
         
-        ResourceUtil.exportCharacter(LoaderUtil.getAllKarts().get(41));
+        ResourceUtil.exportCharacter(LoaderUtil.getAllKarts().get(32));
         model.addAttribute("karts", LoaderUtil.getAllKarts());
         
         return "test";

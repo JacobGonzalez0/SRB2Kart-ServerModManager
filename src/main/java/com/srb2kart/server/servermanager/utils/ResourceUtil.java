@@ -263,32 +263,33 @@ public class ResourceUtil {
             files.add(correctPath + wantFix.toUpperCase() +"WANT");
             files.add(correctPath + wantFix.toUpperCase() +"MMAP");
             
-            
             //prepare new wad file
             WadFile newwad = WadFile.createWadFile("res/" + realname + ".wad");
             
-
             for(int i = 0; i < files.size(); i++){
+
                 ZipEntry entry = file.getEntry(files.get(i));
                 System.out.println(files.get(i));
                 byte[] bArray = file.getData(files.get(i));
-                String nam = new File(entry.getName()).getName();
+                String nam = new String();
 
-                //check for file extentions
-                if(
-                    nam.length() > 7 &&
-                    nam.substring(nam.length()-7).toLowerCase().equals("ogg.ogg") 
-                ){
-                    //and remove it
-                    newwad.addData(nam.substring(0, nam.length()-8), bArray); 
-                }else if( 
-                    nam.substring(nam.length()-3).toLowerCase().equals("ogg") ) 
-                {
-                    newwad.addData(nam.substring(0, nam.length()-4), bArray); 
-                }else{
-                    newwad.addData(nam, bArray);
+                try{
+                    nam = new File(entry.getName()).getName();
+                }catch(NullPointerException ex){
+                    System.out.println("missing .lmp");
+
+                    entry = file.getEntry(files.get(i) + ".lmp");
+                    bArray = file.getData(files.get(i) + ".lmp");
+                    nam = new File(entry.getName()).getName(); 
+                    
                 }
                 
+                if(nam.length() > 8){
+                    nam = nam.substring(0,8);
+                }
+                
+                newwad.addData(nam, bArray);
+         
             }
 
             newwad.close();
