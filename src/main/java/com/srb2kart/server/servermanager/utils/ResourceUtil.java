@@ -207,7 +207,9 @@ public class ResourceUtil {
             List<String> files = new ArrayList<String>();
 
             String realname = kart.getName();
-            String sPrefix = realname;
+            String sPrefix = realname.toLowerCase();
+            System.out.println("hit" + sPrefix);
+            System.out.println("hit2" + realname);
 
             //look for all related files and sort though them
             List<String> graphics = file.getEntriesStartingWith("graphics");
@@ -217,10 +219,22 @@ public class ResourceUtil {
             String soundsPath = new String();
             for(String filename: sounds){
                 if(filename.toLowerCase().contains(sPrefix)){
+                    System.out.println(filename);
                     soundsPath = filename;
                 }
             }
-            soundsPath = soundsPath.substring(0,soundsPath.length()-8);
+            int soundLength;
+            StringBuilder soundFile = new StringBuilder();
+            for(int i=soundsPath.length(); 0>soundsPath.length();i--){
+                soundFile.append(soundsPath.charAt(i));
+            }
+            soundLength = soundFile.indexOf("");
+            System.out.println(soundsPath);
+            System.out.println(soundFile);
+            System.out.println(soundLength);
+
+            soundsPath = soundsPath.substring(0,soundsPath.length()-soundLength);
+
             for(String filename: sounds){
                 if(filename.contains(soundsPath)){
                     files.add(filename);

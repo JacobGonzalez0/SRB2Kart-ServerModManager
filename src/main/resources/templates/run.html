@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRB2Kart</title>
+</head>
+<body>
+    status: <span th:text="${status}"></span><br>
+    <form action="/run" method="post">
+        <input type="hidden" name="action" value="run">
+        <input type="submit" value="Run game">
+    </form>
+    <form action="/run" method="post">
+        <input type="hidden" name="action" value="stop">
+        <input type="submit" value="Stop game">
+    </form>
+</body>
+</html>

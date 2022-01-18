@@ -5,7 +5,8 @@ xmlns:th="http://www.thymeleaf.org">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css' integrity='sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w==' crossorigin='anonymous'/>
+    <title>Export Karts</title>
 </head>
 <style>
     .profile{
@@ -18,13 +19,48 @@ xmlns:th="http://www.thymeleaf.org">
 </style>
 <body>
 
-    <div>
+    <div class="container-fluid">
+
+       
+        <div th:if="${error != null}" th:text="${error}" class="mt-3 alert alert-danger" role="alert">
+            
+        </div>
+    
+        <div th:if="${message != null}" th:text="${message}" class="mt-3 alert alert-primary" role="alert">
+            
+        </div>
+   
         
+        <div class="col">
+            <tr th:each="kart,i: ${karts}">
+                <div>
+                    <form method="post" th:action="@{/kart/compile/{id}(id=${i.index})}" class="form-control">
+                        
+                        <div class="row">
+                            <div class="col-6 col-md-3 col-lg-4 d-flex justify-content-center">
+                                <div class="p-2 mx-auto">
+                                    <image class="profile rounded mx-auto" th:src="${kart.image}" />
+                                </div>
+                                <div class="p-2 my-auto">
+                                    <input class="btn btn-primary" type="submit" value="Export">
+                                </div>
+                            </div>
+                            <div class="col">
+                                Name: <span th:text="${kart.name}"></span> <br>
+                                Kart Speed: <span th:text="${kart.kartspeed}"></span> <br>
+                                Kart Weight: <span th:text="${kart.kartweight}"></span> <br>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+                
+                
+            </tr>
+        </div>
+       
     </div>
-    <tr th:each="kart: ${karts}">
-        <image class="profile" th:src="${kart.image}" />
-        
-    </tr>
+    
     <span th:if="${error}" th:text="${error}"></span>
     
 </body>
