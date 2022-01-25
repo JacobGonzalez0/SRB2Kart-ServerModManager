@@ -36,3 +36,5 @@ res/server/**
 ### Resources ###
 *.wad
 *.pk3
+*.mv.db
+src/main/resources/application.properties

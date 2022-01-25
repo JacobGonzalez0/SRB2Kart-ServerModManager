@@ -27,6 +27,7 @@ import java.util.zip.ZipInputStream;
 
 import javax.imageio.ImageIO;
 
+import com.srb2kart.server.servermanager.utils.ConfigUtil;
 import com.srb2kart.server.servermanager.utils.JsonUtil;
 import com.srb2kart.server.servermanager.utils.LoaderUtil;
 import com.srb2kart.server.servermanager.utils.ResourceUtil;
@@ -61,6 +62,23 @@ public class TestController {
 
     Process process;
     LogServices log;
+
+    @GetMapping("/read")
+    public String read(Model model) throws Exception{
+        ConfigUtil.readConfig();
+        return "index";
+    }
+
+    @GetMapping("/write")
+    public String write(Model model){
+        try {
+            ConfigUtil.writeConfig();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return "index";
+    }
 
     @GetMapping("/run")
     public String run(Model model){

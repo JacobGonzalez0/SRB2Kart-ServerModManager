@@ -1,11 +1,17 @@
 package com.srb2kart.server.servermanager.models;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "commands")
 public class ConfigEntry {
+    
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String arguement;
     private String catagory;

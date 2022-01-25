@@ -4,24 +4,40 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
 import com.srb2kart.server.servermanager.models.ConfigEntry;
+import com.srb2kart.server.servermanager.repositories.ConfigEntryRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ConfigUtil {
-    
 
+    private static
+    ConfigEntryRepository configRepo;
+    
     private static File config;
+
+    @Autowired
+    public ConfigUtil(ConfigEntryRepository configRepo) {
+        ConfigUtil.configRepo = configRepo;
+    }
 
     @PostConstruct
     private static void prepareConfig() throws Exception{
@@ -44,47 +60,71 @@ public class ConfigUtil {
        
     }
 
-    public static void readConfig() throws Exception{
+    public static List<ConfigEntry> readConfig() throws Exception{
 
         prepareConfig();
 
-        FileInputStream fileInputStream = null;
-        byte[] configBuffer = new byte[(int) config.length()];
-
-        //read config into buffer
-        try{
-           //convert file into array of bytes
-           fileInputStream = new FileInputStream(config);
-           fileInputStream.read(configBuffer);
-           fileInputStream.close();
-        }
-        catch (Exception e)
-        {
-           e.printStackTrace();
-        }
-
-        String configString = Base64.getEncoder().encodeToString(configBuffer);
-        String[] rawEntries = configString.split("\n");
+        byte[] encoded = Files.readAllBytes(Paths.get(config.getAbsolutePath()));
+        String configString = new String(encoded, StandardCharsets.UTF_8);
+        String[] rawEntries = configString.split("(\n| )");
 
         List<ConfigEntry> configEntries = new ArrayList<ConfigEntry>();
 
+        System.out.println(rawEntries.length);
         for(int i = 0; i < rawEntries.length; i++){
-            if(i % 2 != 0){
-                configEntries.set(i, parseEntry(rawEntries[i], rawEntries[i+1]));
+            if(i % 2 == 0){
+                configEntries.add(parseEntry(rawEntries[i], rawEntries[i+1]));
             }
         }
 
-        
-        
+        return configEntries;
+
+    }
+
+    public static void readConfigSave() throws Exception{
+
+        prepareConfig();
+
+        byte[] encoded = Files.readAllBytes(Paths.get(config.getAbsolutePath()));
+        String configString = new String(encoded, StandardCharsets.UTF_8);
+        String[] rawEntries = configString.split("(\n| )");
+
+        List<ConfigEntry> configEntries = new ArrayList<ConfigEntry>();
+
+        System.out.println(rawEntries.length);
+        for(int i = 0; i < rawEntries.length; i++){
+            if(i % 2 == 0){
+                configEntries.add(parseEntry(rawEntries[i], rawEntries[i+1]));
+            }
+        }
+
+        for(ConfigEntry entry: configEntries){
+            System.out.println(entry.getRawCommand());
+            System.out.println(entry.getId());
+            configRepo.save(entry);
+        }
 
 
+    }
+
+    public static void clearConfig() throws IOException {
+        FileWriter fwOb = new FileWriter(config, false); 
+        PrintWriter pwOb = new PrintWriter(fwOb, false);
+        pwOb.flush();
+        pwOb.close();
+        fwOb.close();
     }
 
     public static void writeConfig() throws Exception{
 
         prepareConfig();
-        
-
+        List<ConfigEntry> configEntries = configRepo.findAll();
+        clearConfig();
+        FileWriter myWriter = new FileWriter(config, true);
+        for(ConfigEntry entry: configEntries){
+            myWriter.write(entry.getRawCommand() + "\n");
+        }
+        myWriter.close();
 
     }
 
@@ -105,7 +145,7 @@ public class ConfigUtil {
         }
 
         newEntry.setArguement(arg);
-        newEntry.setRawCommand(entry + " " + "arg");
+        newEntry.setRawCommand(entry + " " + arg);
 
         return newEntry;
     }
