@@ -14,7 +14,7 @@ public class LogServices extends Thread {
     private synchronized boolean keepRunning() {
         return this.doStop == false;
     }
-    
+
     public void run(){
         System.out.println("MyThread running");
         String fileName = "res/server/log.txt";
@@ -23,7 +23,7 @@ public class LogServices extends Thread {
                 );
     
                 long filePointer;
-                while ( true ) {
+                while ( keepRunning() ) {
                     final String string = bufferedReader.readLine();
     
                     if ( string != null )

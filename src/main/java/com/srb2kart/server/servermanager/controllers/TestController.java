@@ -83,9 +83,11 @@ public class TestController {
 
         System.out.println(action);
 
+        //check if config exists
+   
 
         if(action.equals("run")){
-            ProcessBuilder builder = new ProcessBuilder("res/server/srb2kart.exe","-console", "=server 1", "-dedicated", "+servername TEST");
+            ProcessBuilder builder = new ProcessBuilder("res/server/srb2kart.exe", "-console", "-dedicated", "-config server.cfg");
             
             log = new LogServices();
             log.start();
