@@ -7,7 +7,7 @@ import javax.persistence.Id;
 public class ConfigEntry {
     @Id
     private long id;
-    private String description;
+    private String arguement;
     private String catagory;
     private String rawCommand;
 
@@ -23,12 +23,12 @@ public class ConfigEntry {
         this.id = id;
     }
 
-    public String getDescription() {
-        return this.description;
+    public String getArguement() {
+        return this.arguement;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setArguement(String arguement) {
+        this.arguement = arguement;
     }
 
     public String getCatagory() {
